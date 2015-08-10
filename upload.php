@@ -23,11 +23,6 @@ if ($uploadOk == 0) {
     else{
    		echo "<script>alert('upload failed');</script>";
    		echo "<script>window.location = 'test.php' </script>";
-  //  		while (ob_get_status()) {
-		//     ob_end_clean();
-		// }
-  //  		header("Location:test.php");
-  //   	exit;
     }
 }
 ?>

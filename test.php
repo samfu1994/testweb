@@ -15,7 +15,16 @@
 		function refresh(){
 			window.location.reload();
 		}
-		
+		$(document).ready(function(){
+		  $(".one-word").click(function(){
+		    $(this).hide();
+		  });
+		});
+		$(document).ready(function(){
+		  $(".button").click(function(){
+		    $("p").hide();
+		  });
+		});
 	</script>
 </head>
 
@@ -58,7 +67,7 @@ listTxtFiles($dir);
 	</iframe> -->
 </div>
 </form>
-
+<!-- <p> this is a text</p> -->
 
 <a href="http://www.google.com"><img src = "g.png" width = '100' height '30'/>
 </a>
@@ -76,7 +85,9 @@ function li_clickable(){
 		        myLi[i].addEventListener('click', calls, false);
 		    }
 		}
-li_clickable()
+
+li_clickable();
+// translate();
 </script>
 
 </body>
