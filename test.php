@@ -15,11 +15,7 @@
 		function refresh(){
 			window.location.reload();
 		}
-		$(document).ready(function(){
-		  $(".one-word").click(function(){
-		    $(this).hide();
-		  });
-		});
+
 		$(document).ready(function(){
 		  $(".button").click(function(){
 		    $("p").hide();
