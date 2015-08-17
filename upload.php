@@ -4,7 +4,7 @@ if (!file_exists('uploads'))
 {
     mkdir("uploads", 0777, true);
 }
-$target_dir = "uploads/";
+$target_dir = "/var/www/html/fuhao/test/uploads/";
 $target_file = $target_dir . basename($_FILES["file"]["name"]);
 $uploadOk = 1;
 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);

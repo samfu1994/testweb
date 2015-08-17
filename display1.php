@@ -30,7 +30,7 @@
 	</script>
 </head>
 <body align="center">
-<a href = "test.php"> Back to Index </a>
+<!-- <a href = "test.php"> Back to Index </a> -->
 <?php 
 function getQuery($name){
 	return 0;
@@ -39,7 +39,8 @@ function display_file($target_file){
 	
 	$myfile = fopen($target_file, "r") or die("Unable to open file!");
 	$text = fread($myfile,filesize($target_file));
-	$output= preg_split('/[\ \n\,]+/', $text);
+	$lines = explode("\n", $text);
+	// $output= preg_split('/[\ \,]+/', $text);
 
 	// $dict_addr = "uploads/dictionary.txt";
 	// $dict = fopen($dict_addr, "r")  or die("Unable to open file!");
@@ -80,23 +81,33 @@ function display_file($target_file){
 	// }
 	// print_r($tt);
 	// mysql_free_result($result);
+	foreach($lines as $line){
+		$word_array = preg_split('/[\ \n\,]+/', $line);
+		echo "<br />";
 
 
-	foreach($output as $word){
-		$SQL = "SELECT center FROM dict_table WHERE plain = ".'\''. $word. '\'';
-		$result = mysql_query($SQL, $db_handle);
-		$n = mysql_num_rows($result);
-		$tt = Array();
-		while ($row = mysql_fetch_assoc($result)) {
-	    	$tt = $row['center'];
-		}
-		if ($n==0){
-			echo "<span><span class= 'oneword' onclick='myclick(this)' id ='$n'>$word </span><span class= 'oneword2' onclick='myclick(this)'>$word</span> 
-			</span>";
-		}
-		else{
-			echo "<span><span class= 'oneword' onclick='myclick(this)'>$word </span><span class= 'oneword2' onclick='myclick(this)'>$tt</span> 
-			</span>";
+		foreach($word_array as $word){
+			// if(count($word) > 0 and (ord($word[0]) < 'a' or ord( $word[0]) > ord('z') ) )
+			// 	$SQL = "SELECT center FROM dict_table WHERE plain = ".'\''. $word. '\'';
+			// elseif(count($word) > 0)
+			// 	$SQL = "SELECT center FROM dict_". $word[0] ." WHERE plain = ".'\''. $word. '\'';
+			// else
+			// 	continue;
+			$SQL = "SELECT center FROM dict_table USE INDEX (search_index) WHERE plain = ".'\''. $word. '\'';
+			$result = mysql_query($SQL, $db_handle);
+			$n = mysql_num_rows($result);
+			$tt = Array();
+			while ($row = mysql_fetch_assoc($result)) {
+		    	$tt = $row['center'];
+			}
+			if ($n==0){
+				echo "<span><span class= 'oneword' onclick='myclick(this)' id ='$n'>$word </span><span class= 'oneword2' onclick='myclick(this)'>$word</span> 
+				</span>";
+			}
+			else{
+				echo "<span><span class= 'oneword' onclick='myclick(this)'>$word </span><span class= 'oneword2' onclick='myclick(this)'>$tt</span> 
+				</span>";
+			}
 		}
 	}
 	echo"</table>";
