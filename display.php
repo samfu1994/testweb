@@ -2,7 +2,7 @@
 
 <head>
       <script src="https://code.jquery.com/jquery-1.8.3.js"></script>
-  <title>Cols </title>
+  <title> <?php $dir = $_GET['name']; $dir = explode('/', $dir); $l = count($dir) - 1; echo "$dir[$l]";?></title>
   <style type="text/css">
 
     #left
@@ -98,13 +98,18 @@ function display_file($target_file, $PARA_NUM){
   $title = $name[$num - 1];
 
   foreach($lines as $line){
-    $word_array = preg_split('/[\ \n\,]+/', $line);
+    $word_array = preg_split('/[\ \n]+/', $line);
     echo "<br />";
 
 
     foreach($word_array as $word){
       $search_word = str_replace(".", "", $word);
-      $SQL = "SELECT cluster FROM dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
+      $search_word = str_replace(",", "", $search_word);
+      $search_word = str_replace(";", "", $search_word);
+      $search_word = str_replace(":", "", $search_word);
+      $search_word = str_replace("!", "", $search_word);
+      $search_word = str_replace("--", "", $search_word);
+      $SQL = "SELECT cluster FROM new_dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
       $result = mysql_query($SQL, $db_handle);
       $n1 = mysql_num_rows($result);
       $tt = Array();
@@ -116,7 +121,7 @@ function display_file($target_file, $PARA_NUM){
         echo "<span >$word&nbsp</span>";
       }
       else{
-        $SQL = "SELECT center, distance FROM n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt ." ORDER BY distance";
+        $SQL = "SELECT center, distance FROM new_n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt ." ORDER BY distance";
         $result = mysql_query($SQL, $db_handle);
         $n2 = mysql_num_rows($result);//n2 should be 20, otherwise this cluster has less than 20 words.
         $tt = Array(); 
@@ -167,11 +172,16 @@ function display_file_right($target_file, $PARA_NUM){
   
   foreach($lines as $line){
 
-    $word_array = preg_split('/[\ \n\,]+/', $line);
+    $word_array = preg_split('/[\ \n]+/', $line);
     echo "<br />";
     foreach($word_array as $word){
       $search_word = str_replace(".", "", $word);
-      $SQL = "SELECT cluster FROM dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
+      $search_word = str_replace(",", "", $search_word);
+      $search_word = str_replace(";", "", $search_word);
+      $search_word = str_replace(":", "", $search_word);
+      $search_word = str_replace("!", "", $search_word);
+      $search_word = str_replace("--", "", $search_word);
+      $SQL = "SELECT cluster FROM new_dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
       $result = mysql_query($SQL, $db_handle);
       $n1 = mysql_num_rows($result);
       $tt = Array();
@@ -183,7 +193,7 @@ function display_file_right($target_file, $PARA_NUM){
         echo "<span >$word&nbsp</span>";
       }
       else{
-        $SQL = "SELECT center, distance FROM n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt." ORDER BY distance";
+        $SQL = "SELECT center, distance FROM new_n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt." ORDER BY distance";
         $result = mysql_query($SQL, $db_handle);
         $n2 = mysql_num_rows($result);//n2 should be 20, otherwise this cluster has less than 20 words.
         $tt = Array(); 
@@ -234,9 +244,9 @@ display_file($dir, $PARA_NUM);
     );
 
     // replace
-    $('.sub li').click(
+    $('.sub li span').click(
             function(){
-                var conent = $(this).find('span').html();
+                var conent = $(this).html();
                 $(this).parents('.menu').find('.hover-link').html(conent);
                 return false;
             }

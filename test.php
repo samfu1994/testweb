@@ -121,8 +121,13 @@ function listTxtFiles($dir) {
 						<a class='hover-link'>$file</a>
 						<div class='sub'>
 						    <ul class='sub-options'>";
-						for($x = 2000; $x <= 3000; $x += 500)
-							echo"        <li><a href='display.php?name=uploads/$file&num=$x'>$x</a></li>";
+						$x1 = 2000;
+                        $x2 = 3000;
+                        $x3 = 5000;
+							echo"        <li><a href='display.php?name=uploads/$file&num=$x1'>$x1</a></li>";
+                            echo"        <li><a href='display.php?name=uploads/$file&num=$x2'>$x2</a></li>";
+                            echo"        <li><a href='display.php?name=uploads/$file&num=$x3'>$x3</a></li>";
+
 						echo"</ul>
 						</div>
 						</span>";
