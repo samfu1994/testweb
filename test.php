@@ -85,8 +85,10 @@
 		<br />
 		One thing you don't want to miss is that clicking any of the words that is not stopword can make it become any of the top 20 words within the same class. 
 		<br />
-		You can see a drop-down list when you mouseover a non-stopword, click any word in the non-stopword list and the original word is replaced. Non-stopword is marked by yellow background.
-		<br />
+		<span style ='color:red'> You can see a 2-column drop-down list when you mouseover a non-stopword, the left column consists of the superword of its cluster(most similar to the cluster center), the right column consists of the similar words toward this word which you are mousing over, the following number in each row represents for similarity, the higher the number, the more they are similar with the original word, they are acturally frequency / distance.
+        Click any word in the non-stopword list and the original word is replaced. Non-stopword is marked by yellow background.
+		</span>
+        <br />
 		You can select the # of word clusters now by clicking the drop-down list when you mouseover the document's name.
 		<br />
 		If you mouseover the word and the drop-down doesn't show up, please wait for a few seconds, it can take a few seconds to load the webpage.

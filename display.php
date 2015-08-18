@@ -20,7 +20,7 @@
         }
 
         span {
-            display: inline-block;
+            display: inline;
         }
 
         .menu {
@@ -34,6 +34,7 @@
         .menu li a {
             color: #515151;
             display: inline;
+            width: 200px;
             padding: 6px 15px;
             cursor: pointer;
             font-size: 14px;
@@ -48,7 +49,7 @@
             background: #fff;
             position: absolute;
             z-index: 2;
-            width: 200px;
+            width: 400px;
             padding: 40px 0 3px;
             border-radius: 3px;
             box-shadow: 0 2px 4px #ddd;
@@ -64,6 +65,7 @@
             margin: 0px;
             padding: 0px;
             font-size: 11px;
+            width: 500px;
         }
   </style>
   
@@ -73,7 +75,7 @@
     <div id="left">
       <?php 
 function display_file($target_file, $PARA_NUM){
-  
+  $NORMALIZE_NUM = 100000.0;
   $myfile = fopen($target_file, "r") or die("Unable to open file!");
   $text = fread($myfile,filesize($target_file));
   $lines = explode("\n", $text);
@@ -109,7 +111,7 @@ function display_file($target_file, $PARA_NUM){
       $search_word = str_replace(":", "", $search_word);
       $search_word = str_replace("!", "", $search_word);
       $search_word = str_replace("--", "", $search_word);
-      $SQL = "SELECT cluster FROM new_dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
+      $SQL = "SELECT cluster FROM dict_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
       $result = mysql_query($SQL, $db_handle);
       $n1 = mysql_num_rows($result);
       $tt = Array();
@@ -121,18 +123,20 @@ function display_file($target_file, $PARA_NUM){
         echo "<span >$word&nbsp</span>";
       }
       else{
-        $SQL = "SELECT center, distance FROM new_n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt ." ORDER BY distance";
+        $SQL = "SELECT center, distance FROM word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt ." ORDER BY distance DESC";
+        $new_SQL = "SELECT neighbors, distance FROM neighbor_table_".$PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word.'\''. " ORDER BY distance DESC";
+        $new_result = mysql_query($new_SQL, $db_handle);
         $result = mysql_query($SQL, $db_handle);
         $n2 = mysql_num_rows($result);//n2 should be 20, otherwise this cluster has less than 20 words.
         $tt = Array(); 
-
         echo "<span class = 'menu'>
         <a class = 'hover-link' style=\"background-color: #ffffcc\">$word&nbsp</a>
         <div class='sub'>
           <ul class='sub-options'>";
         echo"<li><a href='#'> <span style = \"color:blue\">".$word."&nbsp</span> </a></li>";
         while ($row = mysql_fetch_assoc($result)) {
-          echo"<li><a href='#' ><span>".$row['center']."&nbsp</span> ". round($row['distance'],4)." </a></li>";
+          $new_row = mysql_fetch_assoc($new_result);
+          echo"<li><a href='#'><span>".$row['center']."&nbsp</span> ". round($row['distance']/$NORMALIZE_NUM,2)." <span>&nbsp&nbsp&nbsp&nbsp&nbsp".$new_row['neighbors']."&nbsp</span>".round($new_row['distance']/$NORMALIZE_NUM, 2)." </a></li>";
         }
         echo"
           </ul>
@@ -144,7 +148,7 @@ function display_file($target_file, $PARA_NUM){
   
 }
 function display_file_right($target_file, $PARA_NUM){
-  
+  $NORMALIZE_NUM = 100000.0;
   $myfile = fopen($target_file, "r") or die("Unable to open file!");
   $text = fread($myfile,filesize($target_file));
   $lines = explode("\n", $text);
@@ -181,7 +185,7 @@ function display_file_right($target_file, $PARA_NUM){
       $search_word = str_replace(":", "", $search_word);
       $search_word = str_replace("!", "", $search_word);
       $search_word = str_replace("--", "", $search_word);
-      $SQL = "SELECT cluster FROM new_dict_table_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
+      $SQL = "SELECT cluster FROM dict_". $PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word. '\'';
       $result = mysql_query($SQL, $db_handle);
       $n1 = mysql_num_rows($result);
       $tt = Array();
@@ -193,7 +197,9 @@ function display_file_right($target_file, $PARA_NUM){
         echo "<span >$word&nbsp</span>";
       }
       else{
-        $SQL = "SELECT center, distance FROM new_n_word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt." ORDER BY distance";
+        $SQL = "SELECT center, distance FROM word_".$PARA_NUM." USE INDEX (search_index) WHERE cluster = ". $tt." ORDER BY distance DESC";
+        $new_SQL = "SELECT neighbors, distance FROM neighbor_table_".$PARA_NUM." USE INDEX (search_index) WHERE plain = ".'\''. $search_word.'\''. " ORDER BY distance DESC";
+        $new_result = mysql_query($new_SQL, $db_handle);
         $result = mysql_query($SQL, $db_handle);
         $n2 = mysql_num_rows($result);//n2 should be 20, otherwise this cluster has less than 20 words.
         $tt = Array(); 
@@ -201,16 +207,18 @@ function display_file_right($target_file, $PARA_NUM){
         while ($row = mysql_fetch_assoc($result)) {
           $tt = $row['center'];
           $tt1 = $row['distance'];
-          break;
+          if($tt != $word)
+            break;
         }
         echo "<span class = 'menu'>
         <a class = 'hover-link' style=\"background-color: #ffffcc\">$tt&nbsp</a>
         <div class='sub'>
           <ul class='sub-options'>";
         echo"<li><a href='#'> <span style = \"color:blue\">".$word."&nbsp</span> </a></li>";
-        echo"<li><a href='#'> <span>".$tt."&nbsp</span>". round($tt1, 4). "</a></li>";
+        echo"<li><a href='#'> <span>".$tt."&nbsp</span>". round($tt1/$NORMALIZE_NUM, 4). "</a></li>";
         while ($row = mysql_fetch_assoc($result)) {
-          echo"<li><a href='#'><span>".$row['center']."&nbsp</span> ". round($row['distance'],4)." </a></li>";
+          $new_row = mysql_fetch_assoc($new_result);
+          echo"<li><a href='#'><span>".$row['center']."&nbsp</span> ". round($row['distance']/$NORMALIZE_NUM,2)."&nbsp&nbsp&nbsp&nbsp&nbsp<span>".$new_row['neighbors']."&nbsp</span>".round($new_row['distance']/$NORMALIZE_NUM, 2)." </a></li>";
         }
         echo"
           </ul>
@@ -228,7 +236,7 @@ display_file($dir, $PARA_NUM);
 
     </div>
      <div id="right">
-    	<?php display_file_right($dir, $PARA_NUM);  ?>
+      <?php display_file_right($dir, $PARA_NUM);  ?>
     </div> 
     <div class="clear"></div>
   </div>
